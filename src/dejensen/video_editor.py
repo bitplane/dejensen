@@ -114,6 +114,14 @@ def speed_ramp_gaps(
 
             # Encode this chunk - use -ss BEFORE -i for fast seeking
             part_file = chunks_dir / f"part_{gap_idx:04d}.mp4"
+            part_file_tmp = chunks_dir / f"part_{gap_idx:04d}.tmp.mp4"
+
+            # Skip if chunk already exists (crash recovery)
+            if part_file.exists():
+                print(f"Chunk {gap_idx + 1}/{len(gaps)} already exists, skipping...")
+                part_files.append(part_file)
+                continue
+
             cmd = [
                 "ffmpeg",
                 "-ss",
@@ -137,37 +145,48 @@ def speed_ramp_gaps(
                 "-c:a",
                 "aac",
                 "-y",
-                str(part_file),
+                str(part_file_tmp),
             ]
 
             print(f"Processing chunk {gap_idx + 1}/{len(gaps)}...")
             subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True)
+            # Move into place atomically
+            part_file_tmp.rename(part_file)
             part_files.append(part_file)
 
         # Add final normal segment after last gap
         if current_pos < video_duration:
             part_file = chunks_dir / f"part_{len(gaps):04d}.mp4"
-            cmd = [
-                "ffmpeg",
-                "-ss",
-                str(current_pos),  # Fast seek
-                "-i",
-                str(video_path),
-                "-to",
-                str(video_duration - current_pos),
-                "-c:v",
-                "libx264",
-                "-preset",
-                "ultrafast",
-                "-crf",
-                "23",
-                "-c:a",
-                "aac",
-                "-y",
-                str(part_file),
-            ]
-            print("Processing final segment...")
-            subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True)
+            part_file_tmp = chunks_dir / f"part_{len(gaps):04d}.tmp.mp4"
+
+            # Skip if final segment already exists (crash recovery)
+            if not part_file.exists():
+                cmd = [
+                    "ffmpeg",
+                    "-ss",
+                    str(current_pos),  # Fast seek
+                    "-i",
+                    str(video_path),
+                    "-to",
+                    str(video_duration - current_pos),
+                    "-c:v",
+                    "libx264",
+                    "-preset",
+                    "ultrafast",
+                    "-crf",
+                    "23",
+                    "-c:a",
+                    "aac",
+                    "-y",
+                    str(part_file_tmp),
+                ]
+                print("Processing final segment...")
+                subprocess.run(cmd, stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True)
+                # Move into place atomically
+                part_file_tmp.rename(part_file)
+            else:
+                print("Final segment already exists, skipping...")
+
             part_files.append(part_file)
 
         # Concat all parts using concat demuxer (fast!)

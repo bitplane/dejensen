@@ -60,17 +60,8 @@ Examples:
         is_url = args.url_or_path.startswith("https://") or args.url_or_path.startswith("http://")
 
         if is_url:
-            # Generate output filename from URL (will be determined by yt-dlp)
-            # For now, use a temp name and rename after
             print(f"Downloading video from: {args.url_or_path}")
-            temp_video = args.output_dir / "temp_download.mp4"
-            video_path = download_video(args.url_or_path, temp_video)
-
-            # Rename to something reasonable (yt-dlp might have changed the extension)
-            video_path_final = args.output_dir / video_path.name
-            if video_path != video_path_final:
-                video_path.rename(video_path_final)
-                video_path = video_path_final
+            video_path = download_video(args.url_or_path, args.output_dir)
             print(f"Downloaded to: {video_path}")
         else:
             # Local file - copy to output directory
