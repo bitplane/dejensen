@@ -1,6 +1,6 @@
 [project]
-name = "dejensonify"
-description = "Remove annoying pauses from presentation videos"
+name = "dejenson"
+description = "Remove pauses from presentation videos"
 version = "0.1.0"
 authors = [
     { name = "Gareth Davidson", email = "gaz@bitplane.net" }
@@ -23,14 +23,11 @@ dev = [
     "pytest-cov",
     "build",
     "twine",
-    "ruff",
-    "mkdocs",
-    "mkdocs-material",
-    "pydoc-markdown"
+    "ruff"
 ]
 
 [project.scripts]
-dejensonify = "dejensonify.cli:main"
+dejenson = "dejenson.cli:main"
 
 [build-system]
 build-backend = "flit_core.buildapi"
