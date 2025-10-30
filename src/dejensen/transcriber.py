@@ -23,11 +23,13 @@ def extract_timestamps(video_path: Path, model_name: str = "base") -> list[dict]
     for segment in result["segments"]:
         if "words" in segment:
             for word in segment["words"]:
-                words.append({
-                    "word": word["word"],
-                    "start": word["start"],
-                    "end": word["end"],
-                })
+                words.append(
+                    {
+                        "word": word["word"],
+                        "start": word["start"],
+                        "end": word["end"],
+                    }
+                )
 
     return words
 

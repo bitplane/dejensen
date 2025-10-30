@@ -1,6 +1,6 @@
 """Tests for gap detection."""
 
-from dejensen.gap_detector import find_gaps, calculate_keep_segments
+from dejensen.gap_detector import find_gaps
 
 
 def test_find_gaps_basic():
@@ -11,7 +11,7 @@ def test_find_gaps_basic():
         {"word": "foo", "start": 3.0, "end": 3.5},
     ]
 
-    gaps = find_gaps(words, max_gap=1.0)
+    gaps = find_gaps(words, min_gap=1.0)
     assert len(gaps) == 1
     assert gaps[0] == (0.5, 2.0)
 
@@ -24,7 +24,7 @@ def test_find_gaps_no_gaps():
         {"word": "foo", "start": 1.1, "end": 1.5},
     ]
 
-    gaps = find_gaps(words, max_gap=1.0)
+    gaps = find_gaps(words, min_gap=1.0)
     assert len(gaps) == 0
 
 
@@ -36,56 +36,7 @@ def test_find_gaps_multiple():
         {"word": "foo", "start": 4.0, "end": 4.5},
     ]
 
-    gaps = find_gaps(words, max_gap=1.0)
+    gaps = find_gaps(words, min_gap=1.0)
     assert len(gaps) == 2
     assert gaps[0] == (0.5, 2.0)
     assert gaps[1] == (2.5, 4.0)
-
-
-def test_calculate_keep_segments_basic():
-    """Test calculating segments to keep with padding."""
-    words = [
-        {"word": "hello", "start": 0.0, "end": 0.5},
-        {"word": "world", "start": 2.0, "end": 2.5},
-        {"word": "foo", "start": 3.0, "end": 3.5},
-    ]
-
-    segments = calculate_keep_segments(words, max_gap=1.0)
-    assert len(segments) == 2
-    # First segment extends 0.5s (half of max_gap) into the gap
-    assert segments[0] == (0.0, 1.0)
-    # Second segment starts 0.5s before gap ends
-    assert segments[1] == (1.5, 3.5)
-
-
-def test_calculate_keep_segments_no_gaps():
-    """Test when there are no gaps to remove."""
-    words = [
-        {"word": "hello", "start": 0.0, "end": 0.5},
-        {"word": "world", "start": 0.6, "end": 1.0},
-    ]
-
-    segments = calculate_keep_segments(words, max_gap=1.0)
-    assert len(segments) == 1
-    assert segments[0] == (0.0, 1.0)
-
-
-def test_calculate_keep_segments_with_duration():
-    """Test with explicit video duration."""
-    words = [
-        {"word": "hello", "start": 0.0, "end": 0.5},
-        {"word": "world", "start": 2.0, "end": 2.5},
-    ]
-
-    segments = calculate_keep_segments(words, max_gap=1.0, video_duration=5.0)
-    assert len(segments) == 2
-    # First segment extends 0.5s into gap
-    assert segments[0] == (0.0, 1.0)
-    # Second segment starts 0.5s before gap ends and goes to end
-    assert segments[1] == (1.5, 5.0)
-
-
-def test_calculate_keep_segments_empty():
-    """Test with empty word list."""
-    segments = calculate_keep_segments([])
-    assert segments == []

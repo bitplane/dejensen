@@ -18,7 +18,7 @@ It...
 1. Downloads a video using `yt-dlp` (or uses a local file)
 2. Extracts word-level timestamps using OpenAI's Whisper
 3. Identifies gaps between words that exceed a threshold (default 0.2 seconds)
-4. Uses ffmpeg to cut out the gaps and reassemble the video
+4. Uses ffmpeg to speed up the gaps with smooth easing transitions
 
 ## Requirements
 

@@ -38,8 +38,8 @@ def calculate_speed_transitions(
     Calculate speed transitions to compress a gap using smooth easing.
 
     Takes a time gap and calculates how to speed it up to fit in target_duration
-    using a symmetric easing curve. Edge segments play at 1.0x (no speedup),
-    middle segments play faster. The curve is quadratic ease-in-out.
+    using a symmetric easing curve. Edge segments play at 20% of peak speed,
+    middle segments play at peak speed. The curve is quadratic ease-in-out.
 
     Args:
         gap_start: Start time of the gap in seconds

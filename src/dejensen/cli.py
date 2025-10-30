@@ -35,7 +35,7 @@ Examples:
         "-o", "--output-dir", type=Path, default=Path("./output"), help="Output directory (default: ./output)"
     )
     parser.add_argument(
-        "-g", "--max-gap", type=float, default=0.2, help="Minimum gap duration to speed up in seconds (default: 0.2)"
+        "-g", "--min-gap", type=float, default=0.2, help="Minimum gap duration to speed up in seconds (default: 0.2)"
     )
     parser.add_argument(
         "-t", "--target-gap", type=float, default=0.2, help="Target duration for sped-up gaps in seconds (default: 0.2)"
@@ -67,9 +67,6 @@ Examples:
             video_path = download_video(args.url_or_path, temp_video)
 
             # Rename to something reasonable (yt-dlp might have changed the extension)
-            if video_path.stem == "temp_download":
-                # Try to get title from the video filename
-                final_name = video_path.stem
             video_path_final = args.output_dir / video_path.name
             if video_path != video_path_final:
                 video_path.rename(video_path_final)
@@ -114,9 +111,9 @@ Examples:
             print(f"Saved timestamps to: {timestamp_file}")
 
         # Step 3: Find gaps to speed up
-        print(f"Analyzing gaps (min gap: {args.max_gap}s)...")
+        print(f"Analyzing gaps (min gap: {args.min_gap}s)...")
         video_duration = get_video_duration(video_path)
-        gaps = find_gaps(words, args.max_gap)
+        gaps = find_gaps(words, args.min_gap)
         print(f"Found {len(gaps)} gaps to speed up")
 
         if not gaps:
@@ -131,7 +128,7 @@ Examples:
         print(f"Total gap time: {total_gap_time:.2f}s")
         print(f"Compressed to: {total_compressed:.2f}s")
         print(f"Time saved: {time_saved:.2f}s")
-        print(f"Output will be {new_duration:.2f}s ({new_duration/video_duration*100:.1f}% of original)")
+        print(f"Output will be {new_duration:.2f}s ({new_duration / video_duration * 100:.1f}% of original)")
 
         # Step 4: Speed ramp the gaps
         output_path = args.output_dir / f"{video_path.stem}_dejensen{video_path.suffix}"
