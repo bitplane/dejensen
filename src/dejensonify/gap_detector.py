@@ -29,6 +29,9 @@ def calculate_keep_segments(words: list[dict], max_gap: float = 0.2, video_durat
     """
     Calculate video segments to keep (inverse of gaps).
 
+    Extends segments into gaps by half the max_gap threshold on each side to avoid cutting off
+    breaths, trailing sounds, etc due to Whisper timestamp inaccuracies.
+
     Args:
         words: List of word dictionaries with 'start' and 'end' keys
         max_gap: Maximum allowed gap in seconds
@@ -49,12 +52,15 @@ def calculate_keep_segments(words: list[dict], max_gap: float = 0.2, video_durat
 
     segments = []
     current_start = 0.0
+    padding = max_gap / 2.0  # Keep half the threshold on each side
 
     for gap_start, gap_end in gaps:
-        # Keep segment from current position to start of gap
-        segments.append((current_start, gap_start))
-        # Next segment starts after the gap
-        current_start = gap_end
+        # Extend segment end into the gap by half threshold
+        segment_end = min(gap_start + padding, gap_end)
+        segments.append((current_start, segment_end))
+
+        # Next segment starts half threshold before gap ends
+        current_start = max(gap_end - padding, gap_start)
 
     # Add final segment from last gap to end
     end_time = video_duration if video_duration else words[-1]["end"]
