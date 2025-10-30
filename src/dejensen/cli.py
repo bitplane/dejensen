@@ -1,33 +1,33 @@
-"""Command-line interface for dejensonify."""
+"""Command-line interface for dejensen."""
 
 import argparse
 import sys
 from pathlib import Path
 
-from dejensonify.downloader import download_video
-from dejensonify.transcriber import extract_timestamps, save_timestamps, load_timestamps
-from dejensonify.gap_detector import calculate_keep_segments
-from dejensonify.video_editor import cut_segments, get_video_duration
+from dejensen.downloader import download_video
+from dejensen.transcriber import extract_timestamps, save_timestamps, load_timestamps
+from dejensen.gap_detector import calculate_keep_segments
+from dejensen.video_editor import cut_segments, get_video_duration
 
 
 def main():
-    """Main entry point for the dejensonify CLI."""
+    """Main entry point for the dejensen CLI."""
     parser = argparse.ArgumentParser(
         description="Remove annoying pauses from presentation videos",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Process a YouTube video with default settings
-  dejensonify https://www.youtube.com/watch?v=VIDEO_ID
+  dejensen https://www.youtube.com/watch?v=VIDEO_ID
 
   # Use a custom max gap and output directory
-  dejensonify https://www.youtube.com/watch?v=VIDEO_ID -g 2.0 -o ./output
+  dejensen https://www.youtube.com/watch?v=VIDEO_ID -g 2.0 -o ./output
 
   # Process a local video file
-  dejensonify /path/to/video.mp4 --no-download
+  dejensen /path/to/video.mp4 --no-download
 
   # Use a larger Whisper model for better accuracy
-  dejensonify URL -m small
+  dejensen URL -m small
         """,
     )
 
@@ -60,8 +60,8 @@ Examples:
                     list(download_dir.glob("*.webm")) +
                     list(download_dir.glob("*.mkv"))
                 )
-                # Filter out dejensonified files
-                existing_videos = [v for v in existing_videos if "_dejensonified" not in v.name]
+                # Filter out dejensen'd files
+                existing_videos = [v for v in existing_videos if "_dejensen" not in v.name]
 
             if existing_videos:
                 video_path = existing_videos[0]
@@ -104,7 +104,7 @@ Examples:
         print(f"Output will be {total_kept:.2f}s ({total_kept/video_duration*100:.1f}% of original)")
 
         # Step 4: Cut and reassemble video
-        output_path = args.output_dir / f"{video_path.stem}_dejensonified.mp4"
+        output_path = args.output_dir / f"{video_path.stem}_dejensen.mp4"
         segments_dir = work_dir / "segments" if args.no_cleanup else None
 
         print(f"Processing video (this may take a while)...")

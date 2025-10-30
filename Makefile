@@ -3,7 +3,7 @@
 		pre-commit update-pre-commit docs dist release
 
 
-PROJECT_NAME := dejenson
+PROJECT_NAME := dejensen
 
 
 all: dev coverage  ## builds everything

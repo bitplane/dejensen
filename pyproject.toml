@@ -1,5 +1,5 @@
 [project]
-name = "dejenson"
+name = "dejensen"
 description = "Remove pauses from presentation videos"
 version = "0.1.0"
 authors = [
@@ -23,11 +23,12 @@ dev = [
     "pytest-cov",
     "build",
     "twine",
-    "ruff"
+    "ruff",
+    "pydoc-markdown"
 ]
 
 [project.scripts]
-dejenson = "dejenson.cli:main"
+dejensen = "dejensen.cli:main"
 
 [build-system]
 build-backend = "flit_core.buildapi"

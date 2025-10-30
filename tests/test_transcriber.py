@@ -1,9 +1,8 @@
 """Tests for transcriber."""
 
-import json
 import tempfile
 from pathlib import Path
-from dejensonify.transcriber import save_timestamps, load_timestamps
+from dejensen.transcriber import save_timestamps, load_timestamps
 
 
 def test_save_and_load_timestamps():

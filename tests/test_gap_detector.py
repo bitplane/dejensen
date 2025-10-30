@@ -1,7 +1,6 @@
 """Tests for gap detection."""
 
-import pytest
-from dejensonify.gap_detector import find_gaps, calculate_keep_segments
+from dejensen.gap_detector import find_gaps, calculate_keep_segments
 
 
 def test_find_gaps_basic():
@@ -44,7 +43,7 @@ def test_find_gaps_multiple():
 
 
 def test_calculate_keep_segments_basic():
-    """Test calculating segments to keep."""
+    """Test calculating segments to keep with padding."""
     words = [
         {"word": "hello", "start": 0.0, "end": 0.5},
         {"word": "world", "start": 2.0, "end": 2.5},
@@ -53,8 +52,10 @@ def test_calculate_keep_segments_basic():
 
     segments = calculate_keep_segments(words, max_gap=1.0)
     assert len(segments) == 2
-    assert segments[0] == (0.0, 0.5)
-    assert segments[1] == (2.0, 3.5)
+    # First segment extends 0.5s (half of max_gap) into the gap
+    assert segments[0] == (0.0, 1.0)
+    # Second segment starts 0.5s before gap ends
+    assert segments[1] == (1.5, 3.5)
 
 
 def test_calculate_keep_segments_no_gaps():
@@ -78,8 +79,10 @@ def test_calculate_keep_segments_with_duration():
 
     segments = calculate_keep_segments(words, max_gap=1.0, video_duration=5.0)
     assert len(segments) == 2
-    assert segments[0] == (0.0, 0.5)
-    assert segments[1] == (2.0, 5.0)
+    # First segment extends 0.5s into gap
+    assert segments[0] == (0.0, 1.0)
+    # Second segment starts 0.5s before gap ends and goes to end
+    assert segments[1] == (1.5, 5.0)
 
 
 def test_calculate_keep_segments_empty():

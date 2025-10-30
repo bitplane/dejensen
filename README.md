@@ -1,4 +1,4 @@
-# 🧥 dejenson
+# 🧥 dejensen
 
 Remove pauses from presentation videos.
 
@@ -10,7 +10,7 @@ Pauses.. are good ... for dramatic effect. When watching? ...
 ## How?
 
 ```bash
-pipx dejenson https://www.youtube.com/watch?v=VIDEO_ID
+pipx dejensen https://www.youtube.com/watch?v=VIDEO_ID
 ```
 
 It...
