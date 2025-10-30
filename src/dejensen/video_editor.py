@@ -97,9 +97,19 @@ def speed_ramp_gaps(
                 filter_lines.append(
                     f"[0:v]trim=start={rel_start:.6f}:end={rel_end:.6f},setpts=PTS-STARTPTS,setpts=PTS/{speed:.6f}[v{i}]"
                 )
-                # Audio: use asetrate to change playback speed (pitch shifts but fast!)
+                # Audio: use atempo (pitch-preserving, slower but higher quality)
+                # atempo only supports 0.5-100x, so chain multiple for extreme speeds
+                atempo_chain = []
+                remaining_speed = speed
+                while remaining_speed > 2.0:
+                    atempo_chain.append("atempo=2.0")
+                    remaining_speed /= 2.0
+                if remaining_speed > 1.0:
+                    atempo_chain.append(f"atempo={remaining_speed:.6f}")
+
+                atempo_filter = ",".join(atempo_chain) if atempo_chain else "atempo=1.0"
                 filter_lines.append(
-                    f"[0:a]atrim=start={rel_start:.6f}:end={rel_end:.6f},asetrate=44100*{speed:.6f},aresample=44100,asetpts=PTS-STARTPTS[a{i}]"
+                    f"[0:a]atrim=start={rel_start:.6f}:end={rel_end:.6f},{atempo_filter},asetpts=PTS-STARTPTS[a{i}]"
                 )
                 stream_labels.append(f"[v{i}][a{i}]")
 
