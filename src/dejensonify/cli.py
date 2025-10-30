@@ -104,7 +104,7 @@ Examples:
         print(f"Output will be {total_kept:.2f}s ({total_kept/video_duration*100:.1f}% of original)")
 
         # Step 4: Cut and reassemble video
-        output_path = work_dir / f"{video_path.stem}_dejensonified.mp4"
+        output_path = args.output_dir / f"{video_path.stem}_dejensonified.mp4"
         segments_dir = work_dir / "segments" if args.no_cleanup else None
 
         print(f"Processing video (this may take a while)...")
