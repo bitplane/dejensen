@@ -1,6 +1,6 @@
 # the things that don't have output files or run every time
 .PHONY: help all install test dev coverage clean \
-		pre-commit update-pre-commit docs dist release
+		pre-commit update-pre-commit docs dist update-template
 
 
 PROJECT_NAME := dejensen
@@ -12,15 +12,14 @@ install: .venv/.installed  ## installs the venv and the project packages
 
 dev: .venv/.installed-dev pre-commit  ## prepare local repo and venv for dev
 
-docs: scripts/docs.sh docs/*  ## publish the docs
-	scripts/docs.sh
-
 test: .venv/.installed-dev  ## run the project's tests
 	scripts/test.sh $(PROJECT_NAME)
 
 coverage: .venv/.installed-dev scripts/coverage.sh  ## build the html coverage report
 	scripts/coverage.sh $(PROJECT_NAME)
 
+docs: .venv/.installed-dev scripts/docs.sh docs/index.md README.md pyproject.toml ## build the documentation
+	scripts/docs.sh
 
 clean:  ## delete caches and the venv
 	scripts/clean.sh
@@ -29,6 +28,9 @@ pre-commit: .git/hooks/pre-commit  ## install pre-commit into the git repo
 
 update-pre-commit: scripts/update-pre-commit.sh  ## autoupdate pre-commit
 	scripts/update-pre-commit.sh
+
+update-template: scripts/update-template.sh  ## pull Makefile, scripts and workflows from the template repo
+	scripts/update-template.sh
 
 dist: scripts/dist.sh ## build the distributable files
 	scripts/dist.sh $(PROJECT_NAME)
